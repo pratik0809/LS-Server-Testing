@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-mongoose.connect('http://localhost/testroutes');
+mongoose.connect('mongodb://localhost/testroutes');
 
-const Pets = require('./Pets');
+const Client = require('./Client');
 const server = require('./server')
 
 const chai = require('chai')
@@ -12,7 +12,8 @@ chai.use(chaiHTTP);
 
 describe('/clients', () => {
   let clientID;
-  const newClient = {
+
+  const testClient = {
     clientName: 'Satish',
     species: 'German Shepherd',
     owner: {
@@ -22,39 +23,91 @@ describe('/clients', () => {
       email: 'satish@gmail.com'
     }
   };
+
   beforeEach((done) => {
-    new Pet(newClient).save((err, savedClient) => {
-      if(err) {
-        console.log(err);
-        done(err);
-      }
+    new Client(testClient).save((err, savedClient) => {
+      if(err) return done();
       clientID = savedClient.id;
-      done();
     })
-  })
+    done();
+  });
+
   afterEach((done) => {
-    Pet.remove({}, (err) => {
-      if(err) {
-        console.log(err);
-        return done();
-      }
+    Client.remove({}, (err) => {
+      if(err) return done(err);
     });
+    done();
   });
 
   describe('GET /clients', () => {
     it('Should get an individual client', (done) => {
       chai.request(server)
-        .get('/clients')
-
-
+        .get(`/clients/${clientID}`)
+        .end((err, res) => {
+          if(err) {
+            done(err);
+          }
+          expect(res.status).to.equal(200);
+          expect(typeof res.body).to.equal('object');
+          expect(res.body.clientName).to.equal('Satish');
+          done();
+        })
     });
-    it('Should get all clients');
-  });
-  describe('POST /clients', () => {
 
+    it('Should get all clients', (done) => {
+      chai.request(server)
+        .get(`/clients`)
+        .end((err, res) => {
+          if(err) {
+            done(err);
+          }
+          expect(res.status).to.equal(200);
+          expect(Array.isArray(res.body)).to.equal(true);
+          expect(res.body.length).to.equal(1);
+          expect(res.body[0].clientName).to.equal('Satish');
+          done();
+        })
+    });
+  });
+
+  describe('POST /clients', () => {
+    it('Should create a new client', (done) => {
+      chai.request(server)
+
+      .post(`/clients`)
+      .send({
+            clientName: 'Matt Higbee',
+            species: 'Crazy cat',
+            owner: {
+              name: 'Matt Higbee',
+              address: 'Best Town USA',
+              phoneNumber: 12345678910,
+              email: 'gethimajob@gmail.com'
+            }
+      })
+        .end((err, res) => {
+          if(err) {
+            done(err);
+          }
+          expect(res.status).to.equal(201);
+          expect(res.body.clientName).to.equal('Matt Higbee');
+          expect(typeof res.body).to.equal('object');
+          done();
+        })
+    });
   });
   describe('DELETE /clients/:uniqueID', () => {
-
+    it('Should delete a client', (done) => {
+      chai.request(server)
+        .delete(`/clients/${clientID}`)
+        .end((err, res) => {
+          if(err) {
+            done(err);
+          }
+          console.log(res.body);
+          //expect(Client.find({}).count()).to.equal(0);
+        })
+    })
   });
   describe('PUT /clients/:uniqueID', () => {
 

@@ -1,0 +1,31 @@
+{
+  "name": "ls-server-testing",
+  "version": "1.0.0",
+  "description": "Topics:   * API Specification Design   * Test Driven Development   * Async Testing with Mocha",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.18.1",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "express": "^4.15.4",
+    "mongoose": "^4.11.12",
+    "morgan": "^1.8.2"
+  },
+  "devDependencies": {
+    "mocha": "^3.5.3"
+  },
+  "scripts": {
+    "test": "mocha *.test.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pratik0809/LS-Server-Testing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pratik0809/LS-Server-Testing/issues"
+  },
+  "homepage": "https://github.com/pratik0809/LS-Server-Testing#readme"
+}

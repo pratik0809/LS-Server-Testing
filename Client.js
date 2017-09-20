@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const Pet = new mongoose.Schema({
+const ClientSchema = new mongoose.Schema({
   clientName: {
     type: String,
     required: true
@@ -9,7 +9,10 @@ const Pet = new mongoose.Schema({
     type: String,
     required: true
   },
-  timeOfVisit: Date,
+  timeOfVisit: {
+    type: Date,
+    default: Date.now
+  },
   owner: {
     name: {
       type: String,
@@ -29,3 +32,7 @@ const Pet = new mongoose.Schema({
     },
   }
 });
+
+const Client = mongoose.model('Client', ClientSchema)
+
+module.exports = Client;
