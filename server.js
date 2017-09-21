@@ -10,6 +10,7 @@ const STATUS_USER_ERROR = 422;
 
 server.use(bodyParser.json());
 server.use(morgan("combined"));
+mongoose.Promise = global.Promise;
 
 server.get('/clients/:uniqueID', (req, res) => {
   const { uniqueID } = req.params;
@@ -33,13 +34,35 @@ server.get('/clients', (req, res) => {
 });
 
 server.post('/clients', (req, res) => {
-  const client = new Client(req.body).save((err, savedClient) => {
+  const client = req.body;
+  const newClient = new Client({client});
+  newClient.save((err, savedClient) => {
     if(err) {
       res.status(STATUS_USER_ERROR);
       res.json(err);
     }
     res.status(201);
     res.json(savedClient);
+  });
+});
+
+server.put('/clients/:uniqueID', (req, res) => {
+  const { clientID } = req.params;
+  const clientToUpdate = req.body
+  Client.findById(clientID, (err, foundClient) =>{
+    if(err) {
+      res.status(STATUS_USER_ERROR);
+      res.json(err);
+    }
+    foundClient = clientToUpdate;
+    Client.save((err, foundClient) => {
+      if(err) {
+        res.status(STATUS_USER_ERROR);
+        res.json(err);
+      }
+      res.status(201);
+      res.json(foundClient);
+    });
   });
 });
 

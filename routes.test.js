@@ -99,17 +99,47 @@ describe('/clients', () => {
   describe('DELETE /clients/:uniqueID', () => {
     it('Should delete a client', (done) => {
       chai.request(server)
-        .delete(`/clients/${clientID}`)
-        .end((err, res) => {
+      .delete(`/clients/${clientID}`)
+      .end((err, res) => {
+        if(err) {
+          return done(err);
+        }
+        expect(res.status).to.equal(200);
+        Client.findById(clientID, (err, res)=> {
           if(err) {
-            done(err);
+            console.log('THIS IS THE ERROR',err);
+            return done(err);
           }
-          console.log(res.body);
-          //expect(Client.find({}).count()).to.equal(0);
-        })
+          console.log('THIS IS RESPONSE',res);
+        expect(res).to.equal(null);
+        return done();
+        });
+      })
     })
   });
   describe('PUT /clients/:uniqueID', () => {
-
+    it('Should update a clients information', (done) => {
+      chai.request(server)
+      .put(`/clients/${clientID}`)
+      .send({
+        clientName: 'French Fries',
+        species: 'Black Cat',
+        owner: {
+          name: 'Satish Cat Man',
+          address: 'Toledo, OH',
+          phoneNumber: 4196096668,
+          email: 'satish@gmail.com'
+        }
+      })
+      .end((err, res) => {
+        if(err) {
+          done(err);
+        }
+        expect(res.status).to.equal(201);
+        expect(res.body.clientName).to.equal('French Fries');
+        expect(typeof res.body).to.equal('object');
+        done();
+      })
+    })
   });
 });
